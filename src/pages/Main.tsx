@@ -1,21 +1,16 @@
-import { Alert, StyleSheet, Text, View } from 'react-native';
-import MapView, { LatLng, Region } from 'react-native-maps';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { deleteUser, getUserByLogin, getUsers } from '../services/users';
-import { getCurrentPositionAsync, requestForegroundPermissionsAsync } from 'expo-location';
-
-import { AuthenticationContext } from '../context/AuthenticationContext';
-import UserMarker from '../components/UserMarker';
-import { RectButton } from 'react-native-gesture-handler';
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import MapView, { LatLng, Region } from 'react-native-maps';
+
+import db from '../../db.json';
+import UserMarker from '../components/UserMarker';
 import User from '../types/user';
 import { DEFAULT_LOCATION, tryGetCurrentPosition } from '../utils/location';
 
 export default function Main({ navigation }: StackScreenProps<any>) {
-    const authenticationContext = useContext(AuthenticationContext);
-    const currentUser = authenticationContext?.value;
-
     const mapViewRef = useRef<MapView>(null);
 
     const [devs, setDevs] = useState<User[]>([]);
@@ -23,18 +18,12 @@ export default function Main({ navigation }: StackScreenProps<any>) {
     const [currentRegion, setCurrentRegion] = useState<Region>();
 
     useEffect(() => {
-        getUsers()
-            .then(setDevs)
-            .catch((err) => Alert.alert(String(err)));
-
+        // TODO: fetch users from API. For now, we'll use a mock.
+        const users = db.users as User[];
+        setDevs(users);
         loadInitialPosition();
     }, []);
 
-    /**
-     * Loads the user's current location and sets it as the current region.
-     * If the user denies the location permission, it uses the default location.
-     * @returns A promise that resolves to void.
-     */
     function loadInitialPosition() {
         tryGetCurrentPosition()
             .catch(() => DEFAULT_LOCATION)
@@ -48,39 +37,10 @@ export default function Main({ navigation }: StackScreenProps<any>) {
             });
     }
 
-    /**
-     * Handles the logout action. It first retrieves the current user's information from the server using their login.
-     * If the user exists, it deletes their account from the server.
-     * Then it sets the authentication context value to null and navigates the user to the Setup screen.
-     * If any error occurs, it shows an alert with the error message.
-     * @returns A promise that resolves to void.
-     */
     function handleLogout() {
-        if (currentUser) {
-            getUserByLogin(currentUser)
-                .then((user) => {
-                    if (user) {
-                        return deleteUser(user.id);
-                    } else {
-                        // User should exist, since they are currently logged in.
-                        // There is nothing to be done here but...
-                        // TODO log this on your tracking system so it can be investigated
-                    }
-                })
-                .then(() => {
-                    authenticationContext?.setValue(null);
-                    navigation.replace('Setup');
-                })
-                .catch((err) => {
-                    Alert.alert(String(err));
-                });
-        }
+        navigation.replace('Setup');
     }
 
-    /**
-     * Fits the map to show all the devs and the user's location.
-     * @returns A promise that resolves to void.
-     */
     function fitAll() {
         const locations: LatLng[] = devs.map((dev) => dev.coordinates);
         if (userLocation) locations.push(userLocation);

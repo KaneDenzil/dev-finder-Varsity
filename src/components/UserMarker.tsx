@@ -1,8 +1,8 @@
-import { Callout, Marker } from 'react-native-maps';
+import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import React, { useContext } from 'react';
+import { Callout, Marker } from 'react-native-maps';
 
-import { AuthenticationContext } from '../context/AuthenticationContext';
+import db from '../../db.json';
 import User from '../types/user';
 
 interface UserMarkerProps {
@@ -11,8 +11,8 @@ interface UserMarkerProps {
 }
 
 export default function UserMarker({ data: user, handleCalloutPress }: UserMarkerProps) {
-    const currentUser = useContext(AuthenticationContext)?.value;
-    const isCurrentUser = user.login === currentUser;
+    // TODO: use context to get current user (let's just assume it's the first one for now)
+    const isCurrentUser = user.login === (db.users as any)[0].login;
 
     return (
         <Marker key={user.id} coordinate={user.coordinates}>

@@ -1,19 +1,15 @@
-import { Alert, KeyboardAvoidingView, StyleSheet, TextInput, View } from 'react-native';
-import { DEFAULT_LOCATION, tryGetCurrentPosition } from '../utils/location';
+import React, { useEffect, useState } from 'react';
+import { KeyboardAvoidingView, StyleSheet, TextInput, View } from 'react-native';
 import MapView, { LatLng, MapPressEvent, Marker, PoiClickEvent, Region } from 'react-native-maps';
-import React, { useContext, useEffect, useState } from 'react';
+import { DEFAULT_LOCATION, tryGetCurrentPosition } from '../utils/location';
 
-import { AuthenticationContext } from '../context/AuthenticationContext';
-import BigButton from '../components/BigButton';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import axios from 'axios';
-import { getUserInfo as getGitHubUserInfo } from '../services/github';
-import { postUser } from '../services/users';
+import Spinner from 'react-native-loading-spinner-overlay';
+import BigButton from '../components/BigButton';
 
 export default function Setup({ navigation }: StackScreenProps<any>) {
-    const authenticationContext = useContext(AuthenticationContext);
+    // TODO: use username to fetch user data from GitHub API and store it in the app state
     const [username, setUsername] = useState('');
 
     const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
@@ -36,48 +32,17 @@ export default function Setup({ navigation }: StackScreenProps<any>) {
             });
     }, []);
 
-    /**
-     * Updates the marker location on the map when the user presses on the map or on a point of interest.
-     * @param event The event object containing the coordinate of the press.
-     */
-    function handleMapPress(event: MapPressEvent | PoiClickEvent): void {
+    function handleMapPress(event: MapPressEvent | PoiClickEvent) {
         setMarkerLocation(event.nativeEvent.coordinate);
     }
 
-    /**
-     * Handles the sign up process by getting the user's GitHub information and posting it to the server.
-     * If the user does not exist on GitHub, it rejects with an error message.
-     * If there is an error, it rejects with the error object.
-     * If the process is successful, it sets the authentication context value and navigates to the Main screen.
-     * @returns A promise that resolves when the process is successful and rejects when there is an error.
-     * @throws An error if the user does not exist on GitHub or if there is an error posting the user to the server.
-     */
-    async function handleSignUp(): Promise<void> {
+    function handleSignUp() {
+        // TODO: handle sign up logic. For now, we'll just fake it.
         setIsAuthenticating(true);
-        getGitHubUserInfo(username)
-            .catch((err) => {
-                if (axios.isAxiosError(err) && err.response?.status == 404) {
-                    return Promise.reject('There is no such username on GitHub.');
-                } else {
-                    return Promise.reject(err);
-                }
-            })
-            .then((fromGitHub) =>
-                postUser({
-                    login: fromGitHub.login,
-                    avatar_url: fromGitHub.avatar_url,
-                    bio: fromGitHub.bio,
-                    company: fromGitHub.company,
-                    name: fromGitHub.name,
-                    coordinates: markerLocation,
-                })
-            )
-            .then(() => {
-                authenticationContext?.setValue(username);
-                navigation.replace('Main');
-            })
-            .catch((err) => Alert.alert(String(err)))
-            .finally(() => setIsAuthenticating(false));
+        navigation.replace('Main');
+        setTimeout(() => {
+            setIsAuthenticating(false);
+        }, 2000);
     }
 
     return (
