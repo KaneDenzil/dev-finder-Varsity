@@ -49,14 +49,14 @@
       "id": "4"
     },
     {
-      "login": "LeviZ",
-      "avatar_url": "https://shorturl.at/8zA28",
+      "login": "shadman2598",
+      "avatar_url": "https://avatars.githubusercontent.com/u/159733029?v=4",
       "bio": " Bow Valley College Student",
       "company": "Mphasis Corporation",
-      "name": "Levi Zigza",
+      "name": "Shadman Shakib",
       "coordinates": {
-        "latitude": 51.048843,
-        "longitude": -114.0612
+        "latitude": 51.0442742464083,
+        "longitude": -114.06326301224942
       },
       "id": "5"
     },
@@ -73,15 +73,15 @@
       }
     },
     {
-      "id": "2d12",
-      "login": "LeviZ",
-      "avatar_url": "https://avatars.githubusercontent.com/u/8007751?v=4",
-      "bio": null,
-      "company": null,
-      "name": "Levi Zortman",
+      "id": "bf64",
+      "login": "KaneDenzil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35671808?v=4",
+      "bio": "DeveOps",
+      "company": "",
+      "name": "Kane Bernard",
       "coordinates": {
-        "latitude": 37.4219983,
-        "longitude": -122.084
+        "latitude": 37.78416132892157,
+        "longitude": -122.40579885923046
       }
     }
   ]
